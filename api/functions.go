@@ -9,6 +9,12 @@ import (
 
 // LoginEmployee authenticates an employee
 func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	// Checks request header and methods.
 	if r.Header.Get("Content-type") == "application/json" && r.Method == http.MethodPost {
 		newCred := &Credentials{}
@@ -34,6 +40,17 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "username or password incorrect", http.StatusUnauthorized)
 			return
 		}
+
+		// Set session cookie values & save
+		session.Values["user"] = newCred.Username
+		session.Values["auth"] = true
+		err = session.Save(r, w)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
 	} else {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	}

@@ -9,15 +9,19 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
+	"github.com/gorilla/securecookie"
+	"github.com/gorilla/sessions"
 	"github.com/joho/godotenv"
 )
 
 // Server struct holding database connection pool.
 type Server struct {
-	db *sql.DB
+	db    *sql.DB
+	store *sessions.CookieStore
 }
 
 func init() {
+	// Load variables in .env file using godotenv package.
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -43,8 +47,24 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// Generate authentication & encryption keys using securecookie package.
+	authKey := securecookie.GenerateRandomKey(64)
+	encryptionKey := securecookie.GenerateRandomKey(32)
+
+	// Initialize session cookie store.
+	store := sessions.NewCookieStore(
+		authKey,
+		encryptionKey,
+	)
+
+	// Set max age & httponly options
+	store.Options = &sessions.Options{
+		MaxAge:   60 * 15,
+		HttpOnly: true,
+	}
+
 	// Create instance of server with db connection pool.
-	s := &Server{db: db}
+	s := &Server{db: db, store: store}
 
 	// Create new router instance.
 	router := mux.NewRouter()
