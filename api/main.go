@@ -59,6 +59,7 @@ func main() {
 
 	// Set max age & httponly options
 	store.Options = &sessions.Options{
+		Path:     "/",
 		MaxAge:   60 * 15,
 		HttpOnly: true,
 	}
@@ -70,6 +71,10 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/api/v1/employees/login", s.LoginEmployee).Methods(http.MethodPost)
+	router.HandleFunc("/api/v1/employees/logout", s.LogoutEmployee).Methods(http.MethodPost)
+
+	// Add middleware to router
+	router.Use(LoggingMiddleware)
 
 	// Start https server
 	listenAt := fmt.Sprintf(":%s", port)

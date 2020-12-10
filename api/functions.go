@@ -45,13 +45,33 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 		session.Values["user"] = newCred.Username
 		session.Values["auth"] = true
 		err = session.Save(r, w)
-
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
+		// http.Redirect(w, r, "/", http.StatusFound)
+
 	} else {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 	}
+}
+
+// LogoutEmployee revokes authentication.
+func (s *Server) LogoutEmployee(w http.ResponseWriter, r *http.Request) {
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	session.Values["user"] = nil
+	session.Values["auth"] = nil
+	session.Options.MaxAge = -1
+	err = session.Save(r, w)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	// http.Redirect(w, r, "/", http.StatusFound)
 }
