@@ -25,3 +25,16 @@ type Products struct {
 	CostPrice   float64   `json:"cost_price"`
 	SalesPrice  float64   `json:"sales_price"`
 }
+
+// WastageResult contains parameters for wastage
+type WastageResult struct {
+	WastageID         int       `json:"wastage_id"`
+	WastageDate       time.Time `json:"wastage_date"`
+	WastageQuantity   int       `json:"quantity"`
+	WastageReason     string    `json:"reason"`
+	ProductName       string    `json:"product_name"`
+	ProductCostPrice  float64   `json:"cost_price"`
+	ProductSalesPrice float64   `json:"sales_price"`
+	WastageLostSales  float64   `json:"lost_sales"`
+	EmployeeFirstname string    `json:"firstname"`
+}

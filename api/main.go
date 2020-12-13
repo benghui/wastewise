@@ -14,7 +14,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Server struct holding database connection pool.
+// Server struct holding database connection pool
+// and session cookiestore.
 type Server struct {
 	db    *sql.DB
 	store *sessions.CookieStore
@@ -40,7 +41,7 @@ func main() {
 	dbName := os.Getenv("DB_NAME")
 
 	// Initialize db connection.
-	dbSettings := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", dbUsername, dbPassword, dbHost, dbPort, dbName)
+	dbSettings := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUsername, dbPassword, dbHost, dbPort, dbName)
 	db, err := sql.Open("mysql", dbSettings)
 
 	if err != nil {
@@ -51,20 +52,21 @@ func main() {
 	authKey := securecookie.GenerateRandomKey(64)
 	encryptionKey := securecookie.GenerateRandomKey(32)
 
-	// Initialize session cookie store.
+	// Initialize session cookiestore.
 	store := sessions.NewCookieStore(
 		authKey,
 		encryptionKey,
 	)
 
-	// Set max age & httponly options
+	// Set max age & httponly options.
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   60 * 15,
 		HttpOnly: true,
 	}
 
-	// Create instance of server with db connection pool.
+	// Create instance of server with db connection pool
+	// and session cookiestore.
 	s := &Server{db: db, store: store}
 
 	// Create new router instance.
@@ -73,10 +75,12 @@ func main() {
 	router.HandleFunc("/api/v1/employees/login", s.LoginEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/employees/logout", s.LogoutEmployee).Methods(http.MethodPost)
 
-	// Add middleware to router
+	router.HandleFunc("/api/v1/wastages", s.GetWastages).Methods(http.MethodGet)
+
+	// Add logging middleware to router.
 	router.Use(LoggingMiddleware)
 
-	// Start https server
+	// Start https server.
 	listenAt := fmt.Sprintf(":%s", port)
 	fmt.Printf("AHOY! Listening at port%s\n", listenAt)
 	log.Fatal(http.ListenAndServeTLS(listenAt, cert, key, router))
