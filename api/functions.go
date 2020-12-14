@@ -80,7 +80,39 @@ func (s *Server) LogoutEmployee(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// GetWastage handles query to wastage data.
+// GetProducts handles query to all products data.
+// It is a protected resource requiring authentication value from sessions.
+func (s *Server) GetProducts(w http.ResponseWriter, r *http.Request) {
+	// Loads the session data from cookiestore.
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Check that employee is authenticated. Otherwise redirect to login.
+	if session.Values["auth"] != true {
+		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		return
+	}
+
+	productResults, err := QueryProducts(s.db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Set header to parse response as JSON.
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(productResults)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+}
+
+// GetWastages handles query to wastage data.
+// It is a protected resource requiring authentication value from sessions.
 // Default is last 7 days from current day.
 func (s *Server) GetWastages(w http.ResponseWriter, r *http.Request) {
 	// Loads the session data from cookiestore.

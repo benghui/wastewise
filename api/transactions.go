@@ -70,3 +70,30 @@ func QueryWastage(db *sql.DB) ([]*WastageResult, error) {
 
 	return wastageResults, nil
 }
+
+// QueryProducts returns the pointer to a slice of ProductResult.
+func QueryProducts(db *sql.DB) ([]*ProductResult, error) {
+	rows, err := db.Query(`SELECT product_id, product_name FROM products`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	productResults := []*ProductResult{}
+
+	for rows.Next() {
+		result := &ProductResult{}
+
+		err := rows.Scan(&result.ProductID, &result.ProductName)
+		if err != nil {
+			return nil, err
+		}
+
+		productResults = append(productResults, result)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return productResults, nil
+}

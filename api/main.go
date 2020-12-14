@@ -39,9 +39,11 @@ func main() {
 	dbHost := os.Getenv("DB_HOST")
 	dbPort := os.Getenv("DB_PORT")
 	dbName := os.Getenv("DB_NAME")
+	dbOpt := os.Getenv("DB_OPTIONS")
+	dbOValue := os.Getenv("DB_OPT_VALUE")
 
 	// Initialize db connection.
-	dbSettings := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?parseTime=true", dbUsername, dbPassword, dbHost, dbPort, dbName)
+	dbSettings := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s=%s", dbUsername, dbPassword, dbHost, dbPort, dbName, dbOpt, dbOValue)
 	db, err := sql.Open("mysql", dbSettings)
 
 	if err != nil {
@@ -74,6 +76,8 @@ func main() {
 
 	router.HandleFunc("/api/v1/employees/login", s.LoginEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/employees/logout", s.LogoutEmployee).Methods(http.MethodPost)
+
+	router.HandleFunc("/api/v1/products", s.GetProducts).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/v1/wastages", s.GetWastages).Methods(http.MethodGet)
 
