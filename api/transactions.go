@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"log"
+	"time"
 )
 
 // QueryPassword returns the pointer to hashed password in database for a given username.
@@ -99,13 +100,54 @@ func QueryProducts(db *sql.DB) ([]*ProductResult, error) {
 }
 
 // CreateWastageEntry writes to database a new wastage entry.
-func CreateWastageEntry(db *sql.DB, newWastageQuantity int, newWastageReason string, productID int, employeeID int) (error) {
-	stmt, err := db.Prepare(`INSERT INTO wastage (wastage_date, quantity, reason, product_id, employee_id) VALUES (NOW(), ?, ?, ?, ?)`)
+func CreateWastageEntry(db *sql.DB, newWastageDate time.Time, newWastageQuantity int, newWastageReason string, productID int, employeeID int) error {
+	stmt, err := db.Prepare(`INSERT INTO wastage (wastage_date, quantity, reason, product_id, employee_id) VALUES (?, ?, ?, ?, ?)`)
 	if err != nil {
 		return err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(newWastageQuantity, newWastageReason, productID, employeeID)
+	_, err = stmt.Exec(newWastageDate, newWastageQuantity, newWastageReason, productID, employeeID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+// QuerySingleWastage returns a pointer to Wastage.
+func QuerySingleWastage(db *sql.DB, id int) (*Wastage, error) {
+	queryString := `SELECT wastage.wastage_id, wastage.wastage_date, wastage.quantity, wastage.reason, products.product_name
+	FROM wastage, products
+	WHERE wastage.wastage_id=?
+	AND wastage.product_id=products.product_id`
+	row := db.QueryRow(queryString, id)
+
+	wastage := &Wastage{}
+
+	err := row.Scan(
+		&wastage.WastageID,
+		&wastage.WastageDate,
+		&wastage.WastageQuantity,
+		&wastage.WastageReason,
+		&wastage.ProductName)
+
+	switch err {
+	case sql.ErrNoRows:
+		return nil, err
+	case nil:
+		return wastage, nil
+	default:
+		return nil, err
+	}
+}
+
+// UpdateWastageEntry updates an existing wastage entry.
+func UpdateWastageEntry(db *sql.DB, id int, editWastageDate time.Time, editWastageQuantity int, editWastageReason string, productID int, employeeID int) error {
+	stmt, err := db.Prepare("UPDATE wastage SET wastage_date=?, quantity=?, reason=?, product_id=?, employee_id=? WHERE wastage_id=?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(editWastageDate, editWastageQuantity, editWastageReason, productID, employeeID, id)
 	if err != nil {
 		return err
 	}

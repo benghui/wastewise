@@ -81,6 +81,8 @@ func main() {
 
 	router.HandleFunc("/api/v1/wastages", s.GetWastages).Methods(http.MethodGet)
 	router.HandleFunc("/api/v1/wastages", s.CreateWastage).Methods(http.MethodPost)
+	router.HandleFunc("/api/v1/wastages/{id:[0-9]+}", s.GetSingleWastage).Methods(http.MethodGet)
+	router.HandleFunc("/api/v1/wastages/{id:[0-9]+}", s.ModifyWastage).Methods(http.MethodPut)
 
 	// Add logging middleware to router.
 	router.Use(LoggingMiddleware)

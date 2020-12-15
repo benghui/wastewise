@@ -2,9 +2,10 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -17,8 +18,8 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Checks request methods.
-	if r.Method == http.MethodPost {
+	// Checks that request content type matches.
+	if r.Header.Get("Content-type") == "application/json" {
 		newCred := &Credentials{}
 
 		// Parse & decode request body into newCred variable
@@ -158,7 +159,7 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if r.Method == http.MethodPost {
+	if r.Header.Get("Content-type") == "application/json" {
 		newWastageForm := &WastageForm{}
 
 		err := json.NewDecoder(r.Body).Decode(newWastageForm)
@@ -167,9 +168,12 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		// Read employee ID from session values.
+		// Type assert to int.
 		employeeID := session.Values["ID"].(int)
 		err = CreateWastageEntry(
 			s.db,
+			newWastageForm.WastageDate,
 			newWastageForm.WastageQuantity,
 			newWastageForm.WastageReason,
 			newWastageForm.ProductID,
@@ -179,6 +183,82 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
+	} else {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+}
+
+// GetSingleWastage handles query for wastage entry.
+func (s *Server) GetSingleWastage(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)["id"]
+	id, err := strconv.Atoi(params)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	wastage, err := QuerySingleWastage(s.db, id)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(wastage)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
+	}
+}
+
+// ModifyWastage handles editing of one wastage record.
+func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
+	// Loads the session data from cookiestore.
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Check that employee is authenticated. Otherwise redirect to login.
+	if session.Values["auth"] != true {
+		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		return
+	}
+
+	// Checks that request content type matches.
+	if r.Header.Get("Content-type") == "application/json" {
+		params := mux.Vars(r)["id"]
+		id, err := strconv.Atoi(params)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		editWastageForm := &WastageForm{}
+
+		err = json.NewDecoder(r.Body).Decode(editWastageForm)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Read employee ID from session values.
+		// Type assert to int.
+		employeeID := session.Values["ID"].(int)
+		err = UpdateWastageEntry(
+			s.db,
+			id,
+			editWastageForm.WastageDate,
+			editWastageForm.WastageQuantity,
+			editWastageForm.WastageReason,
+			editWastageForm.ProductID,
+			employeeID)
+
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusNoContent)
 	} else {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}

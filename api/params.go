@@ -26,6 +26,12 @@ type Products struct {
 	SalesPrice  float64   `json:"sales_price"`
 }
 
+// ProductResult contains the parameters for products query
+type ProductResult struct {
+	ProductID   int    `json:"product_id"`
+	ProductName string `json:"product_name"`
+}
+
 // WastageResult contains parameters for wastage combined with products & employees
 type WastageResult struct {
 	WastageID         int       `json:"wastage_id"`
@@ -39,15 +45,19 @@ type WastageResult struct {
 	EmployeeFirstname string    `json:"firstname"`
 }
 
-// ProductResult contains the parameters for products query
-type ProductResult struct {
-	ProductID   int    `json:"product_id"`
-	ProductName string `json:"product_name"`
+// Wastage contains the parameters for wastage.
+type Wastage struct {
+	WastageID       int       `json:"wastage_id"`
+	WastageDate     time.Time `json:"wastage_date"`
+	WastageQuantity int       `json:"quantity"`
+	WastageReason   string    `json:"reason"`
+	ProductName     string    `json:"product_name"`
 }
 
 // WastageForm contains the parameters for creating a wastage entry
 type WastageForm struct {
-	WastageQuantity int    `json:"quantity"`
-	WastageReason   string `json:"reason"`
-	ProductID       int    `json:"product_id"`
+	WastageDate     time.Time `json:"wastage_date"`
+	WastageQuantity int       `json:"quantity"`
+	WastageReason   string    `json:"reason"`
+	ProductID       int       `json:"product_id"`
 }
