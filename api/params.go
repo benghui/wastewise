@@ -41,6 +41,13 @@ type WastageResult struct {
 
 // ProductResult contains the parameters for products query
 type ProductResult struct {
-	ProductID   int       `json:"product_id"`
-	ProductName string    `json:"product_name"`
+	ProductID   int    `json:"product_id"`
+	ProductName string `json:"product_name"`
+}
+
+// WastageForm contains the parameters for creating a wastage entry
+type WastageForm struct {
+	WastageQuantity int    `json:"quantity"`
+	WastageReason   string `json:"reason"`
+	ProductID       int    `json:"product_id"`
 }

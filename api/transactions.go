@@ -97,3 +97,17 @@ func QueryProducts(db *sql.DB) ([]*ProductResult, error) {
 
 	return productResults, nil
 }
+
+// CreateWastageEntry writes to database a new wastage entry.
+func CreateWastageEntry(db *sql.DB, newWastageQuantity int, newWastageReason string, productID int, employeeID int) (error) {
+	stmt, err := db.Prepare(`INSERT INTO wastage (wastage_date, quantity, reason, product_id, employee_id) VALUES (NOW(), ?, ?, ?, ?)`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(newWastageQuantity, newWastageReason, productID, employeeID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

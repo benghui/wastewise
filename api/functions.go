@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"golang.org/x/crypto/bcrypt"
@@ -16,8 +17,8 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Checks request header and methods.
-	if r.Header.Get("Content-type") == "application/json" && r.Method == http.MethodPost {
+	// Checks request methods.
+	if r.Method == http.MethodPost {
 		newCred := &Credentials{}
 
 		// Parse & decode request body into newCred variable
@@ -52,8 +53,7 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-
-		http.Redirect(w, r, "/api/v1/wastages", http.StatusFound)
+		// http.Redirect(w, r, "/api/v1/wastages", http.StatusFound)
 
 	} else {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -140,5 +140,46 @@ func (s *Server) GetWastages(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
 		return
+	}
+}
+
+// CreateWastage handles inserting new wastage entry.
+func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
+	// Loads the session data from cookiestore.
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Check that employee is authenticated. Otherwise redirect to login.
+	if session.Values["auth"] != true {
+		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		return
+	}
+
+	if r.Method == http.MethodPost {
+		newWastageForm := &WastageForm{}
+
+		err := json.NewDecoder(r.Body).Decode(newWastageForm)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		employeeID := session.Values["ID"].(int)
+		err = CreateWastageEntry(
+			s.db,
+			newWastageForm.WastageQuantity,
+			newWastageForm.WastageReason,
+			newWastageForm.ProductID,
+			employeeID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
+	} else {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 }
