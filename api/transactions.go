@@ -179,6 +179,7 @@ func QueryWastageReportMonthly(db *sql.DB) ([]*ReportMonthly, error) {
 
 		err := rows.Scan(
 			&result.Month,
+			&result.WastageReason,
 			&result.ProductName,
 			&result.TotalQuantity,
 			&result.TotalLostSales)

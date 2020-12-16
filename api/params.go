@@ -70,6 +70,7 @@ type WastageForm struct {
 // ReportMonthly contains the parameters for monthly report
 type ReportMonthly struct {
 	Month          int     `json:"month"`
+	WastageReason  string  `json:"reason"`
 	ProductName    string  `json:"product_name"`
 	TotalQuantity  int     `json:"total_quantity"`
 	TotalLostSales float64 `json:"total_lost_sales"`
