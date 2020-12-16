@@ -158,7 +158,7 @@ func UpdateWastageEntry(db *sql.DB, id int, editWastageDate time.Time, editWasta
 
 // QueryWastageReportMonthly returns a pointer to ReportMonthly
 func QueryWastageReportMonthly(db *sql.DB) ([]*ReportMonthly, error) {
-	queryString := `SELECT MONTH(wastage.wastage_date) AS month, products.product_name,
+	queryString := `SELECT MONTH(wastage.wastage_date) AS month, wastage.reason, products.product_name,
 	SUM(wastage.quantity) AS total_quantity, SUM(wastage.quantity * products.sales_price) AS  total_lost_sales
 	FROM wastage, products
 	WHERE wastage.product_id=products.product_id
