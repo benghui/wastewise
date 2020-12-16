@@ -162,7 +162,7 @@ func QueryWastageReportMonthly(db *sql.DB) ([]*ReportMonthly, error) {
 	SUM(wastage.quantity) AS total_quantity, SUM(wastage.quantity * products.sales_price) AS  total_lost_sales
 	FROM wastage, products
 	WHERE wastage.product_id=products.product_id
-	GROUP BY products.product_name, MONTH(wastage.wastage_date)
+	GROUP BY wastage.reason, products.product_name, MONTH(wastage.wastage_date)
 	ORDER BY total_lost_sales DESC;`
 
 	rows, err := db.Query(queryString)
