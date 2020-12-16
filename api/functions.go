@@ -162,6 +162,10 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Get("Content-type") == "application/json" {
 		newWastageForm := &WastageForm{}
 
+		// Locks & defer Unlock to prevent race conditions
+		newWastageForm.Mu.Lock()
+		defer newWastageForm.Mu.Unlock()
+
 		err := json.NewDecoder(r.Body).Decode(newWastageForm)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
@@ -235,6 +239,10 @@ func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		editWastageForm := &WastageForm{}
+
+		// Locks & defer Unlock to prevent race conditions
+		editWastageForm.Mu.Lock()
+		defer editWastageForm.Mu.Unlock()
 
 		err = json.NewDecoder(r.Body).Decode(editWastageForm)
 		if err != nil {

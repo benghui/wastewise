@@ -1,6 +1,9 @@
 package main
 
-import "time"
+import (
+	"sync"
+	"time"
+)
 
 // Employees contain parameters for employee
 type Employees struct {
@@ -9,6 +12,7 @@ type Employees struct {
 	Firstname  string `json:"firstname"`
 	Lastname   string `json:"lastname"`
 	Password   string `json:"password"`
+	Role       string `json:"role"`
 }
 
 // Credentials contain parameters for logging in
@@ -54,8 +58,9 @@ type Wastage struct {
 	ProductName     string    `json:"product_name"`
 }
 
-// WastageForm contains the parameters for creating a wastage entry
+// WastageForm contains the parameters for creating & editing a wastage entry
 type WastageForm struct {
+	Mu              sync.RWMutex
 	WastageDate     time.Time `json:"wastage_date"`
 	WastageQuantity int       `json:"quantity"`
 	WastageReason   string    `json:"reason"`
