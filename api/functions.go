@@ -30,7 +30,7 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Assigns the pointer return of query for hashed password to storedPassword variable.
-		storedPassword, employeeID, err := QueryPassword(s.db, newCred.Username)
+		storedPassword, employeeID, role, err := QueryPassword(s.db, newCred.Username)
 
 		if err != nil {
 			http.Error(w, "username or password incorrect", http.StatusUnauthorized)
@@ -49,6 +49,7 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 		session.Values["user"] = newCred.Username
 		session.Values["ID"] = employeeID
 		session.Values["auth"] = true
+		session.Values["role"] = role
 		err = session.Save(r, w)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -269,5 +270,35 @@ func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNoContent)
 	} else {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+}
+
+// GetWastagesReportMonthly handles query for monthly report
+func (s *Server) GetWastagesReportMonthly(w http.ResponseWriter, r *http.Request) {
+	// Loads the session data from cookiestore.
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Check that employee is authenticated. Otherwise redirect to login.
+	if session.Values["auth"] != true {
+		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		return
+	}
+
+	reportMonthly, err := QueryWastageReportMonthly(s.db)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Set header to parse response as JSON.
+	w.Header().Set("content-type", "application/json")
+	err = json.NewEncoder(w).Encode(reportMonthly)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnprocessableEntity)
+		return
 	}
 }

@@ -66,3 +66,11 @@ type WastageForm struct {
 	WastageReason   string    `json:"reason"`
 	ProductID       int       `json:"product_id"`
 }
+
+// ReportMonthly contains the parameters for monthly report
+type ReportMonthly struct {
+	Month          int     `json:"month"`
+	ProductName    string  `json:"product_name"`
+	TotalQuantity  int     `json:"total_quantity"`
+	TotalLostSales float64 `json:"total_lost_sales"`
+}

@@ -7,37 +7,39 @@ import (
 )
 
 // QueryPassword returns the pointer to hashed password in database for a given username.
-func QueryPassword(db *sql.DB, username string) (*string, *int, error) {
+func QueryPassword(db *sql.DB, username string) (*string, *int, *string, error) {
 	// Declare password variable as pointer to string
 	var (
 		password   *string
 		employeeID *int
+		role       *string
 	)
-	row := db.QueryRow("SELECT password, employee_id FROM employees WHERE username=?", username)
-	err := row.Scan(&password, &employeeID)
+	row := db.QueryRow("SELECT password, employee_id, role FROM employees WHERE username=?", username)
+	err := row.Scan(&password, &employeeID, &role)
 
 	switch err {
 	case sql.ErrNoRows:
 		log.Println("No rows returned!")
-		return nil, nil, err
+		return nil, nil, nil, err
 	case nil:
-		return password, employeeID, nil
+		return password, employeeID, role, nil
 	default:
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 }
 
 // QueryWastage returns the pointer to a slice of WastageResult.
 func QueryWastage(db *sql.DB) ([]*WastageResult, error) {
-	rows, err := db.Query(
-		`SELECT wastage.wastage_id, wastage.wastage_date, wastage.quantity, wastage.reason,
+	queryString := `SELECT wastage.wastage_id, wastage.wastage_date, wastage.quantity, wastage.reason,
 		products.product_name, products.cost_price, products.sales_price,
 		(products.sales_price * wastage.quantity) AS lost_sales, employees.firstname
 		FROM wastage, products, employees
 		WHERE wastage.product_id=products.product_id
 		AND wastage.employee_id=employees.employee_id
 		AND wastage.wastage_date BETWEEN NOW() - INTERVAL 7 DAY AND NOW()
-		ORDER BY wastage.wastage_id DESC`)
+		ORDER BY wastage.wastage_id DESC`
+
+	rows, err := db.Query(queryString)
 	if err != nil {
 		return nil, err
 	}
@@ -152,4 +154,43 @@ func UpdateWastageEntry(db *sql.DB, id int, editWastageDate time.Time, editWasta
 		return err
 	}
 	return nil
+}
+
+// QueryWastageReportMonthly returns a pointer to ReportMonthly
+func QueryWastageReportMonthly(db *sql.DB) ([]*ReportMonthly, error) {
+	queryString := `SELECT MONTH(wastage.wastage_date) AS month, products.product_name,
+	SUM(wastage.quantity) AS total_quantity, SUM(wastage.quantity * products.sales_price) AS  total_lost_sales
+	FROM wastage, products
+	WHERE wastage.product_id=products.product_id
+	GROUP BY products.product_name, MONTH(wastage.wastage_date)
+	ORDER BY total_lost_sales DESC;`
+
+	rows, err := db.Query(queryString)
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	reports := []*ReportMonthly{}
+
+	for rows.Next() {
+		result := &ReportMonthly{}
+
+		err := rows.Scan(
+			&result.Month,
+			&result.ProductName,
+			&result.TotalQuantity,
+			&result.TotalLostSales)
+		if err != nil {
+			return nil, err
+		}
+
+		reports = append(reports, result)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return reports, nil
 }
