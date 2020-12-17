@@ -76,6 +76,8 @@ func main() {
 
 	router.HandleFunc("/api/v1/employees/login", s.LoginEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/employees/logout", s.LogoutEmployee).Methods(http.MethodPost)
+	router.HandleFunc("/api/v1/employees", s.CreateEmployee).Methods(http.MethodPost)
+
 
 	router.HandleFunc("/api/v1/products", s.GetProducts).Methods(http.MethodGet)
 

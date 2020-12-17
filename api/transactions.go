@@ -101,6 +101,25 @@ func QueryProducts(db *sql.DB) ([]*ProductResult, error) {
 	return productResults, nil
 }
 
+// CreateEmployeeEntry writes new Employee entry to database
+func CreateEmployeeEntry(db *sql.DB, newUsername string, newFirstname string, newLastname string, bPassword string, newRole string) error {
+	stmt, err := db.Prepare(`
+	INSERT INTO employees (username, firstname, lastname, password, role)
+	SELECT username, firstname, lastname, password, role
+	FROM(SELECT ? as username, ? as firstname, ? as lastname, ? as password, ? as role) t
+	WHERE NOT EXISTS (SELECT 1 from employees e WHERE e.username=t.username AND e.firstname=t.firstname AND e.lastname=t.lastname);
+	`)
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	_, err = stmt.Exec(newUsername, newFirstname, newLastname, bPassword, newRole)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // CreateWastageEntry writes to database a new wastage entry.
 func CreateWastageEntry(db *sql.DB, newWastageDate time.Time, newWastageQuantity int, newWastageReason string, productID int, employeeID int) error {
 	stmt, err := db.Prepare(`INSERT INTO wastage (wastage_date, quantity, reason, product_id, employee_id) VALUES (?, ?, ?, ?, ?)`)

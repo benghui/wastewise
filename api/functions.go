@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -74,12 +76,83 @@ func (s *Server) LogoutEmployee(w http.ResponseWriter, r *http.Request) {
 	session.Values["user"] = nil
 	session.Values["ID"] = nil
 	session.Values["auth"] = nil
+	session.Values["role"] = nil
 	session.Options.MaxAge = -1
 	err = session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+// CreateEmployee handles creating an employee
+func (s *Server) CreateEmployee(w http.ResponseWriter, r *http.Request) {
+	// Loads the session data from cookiestore.
+	session, err := s.store.Get(r, "sessionCookie")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// Check that employee is authenticated. Otherwise redirect to login.
+	if session.Values["auth"] != true {
+		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		return
+	}
+
+	if session.Values["role"].(string) != "admin" {
+		http.Error(w, "No Access", http.StatusForbidden)
+		return
+	}
+
+	if r.Header.Get("Content-type") == "application/json" {
+		newEmployee := &Employees{}
+
+		// Locks & defer Unlock to prevent race conditions
+		newEmployee.Mu.Lock()
+		defer newEmployee.Mu.Unlock()
+
+		err := json.NewDecoder(r.Body).Decode(newEmployee)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		hashValue, err := strconv.Atoi(os.Getenv("HASH_VALUE"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		// Hash password
+		bPassword, err := bcrypt.GenerateFromPassword([]byte(newEmployee.Password), hashValue)
+		if err != nil {
+			log.Panic(err)
+		}
+		// Panic recovery
+		defer func() {
+			if err := recover(); err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+			}
+		}()
+
+		err = CreateEmployeeEntry(
+			s.db,
+			newEmployee.Username,
+			newEmployee.Firstname,
+			newEmployee.Lastname,
+			string(bPassword),
+			newEmployee.Role)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusCreated)
+
+	} else {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
 }
 
 // GetProducts handles query to all products data.

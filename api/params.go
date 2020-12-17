@@ -7,7 +7,7 @@ import (
 
 // Employees contain parameters for employee
 type Employees struct {
-	EmployeeID int    `json:"employee_id"`
+	Mu         sync.RWMutex
 	Username   string `json:"username"`
 	Firstname  string `json:"firstname"`
 	Lastname   string `json:"lastname"`
