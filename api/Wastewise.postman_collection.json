@@ -1,0 +1,614 @@
+{
+	"info": {
+		"_postman_id": "543c3c82-1035-496b-b356-0a3c54a84679",
+		"name": "Wastewise",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Employees",
+			"item": [
+				{
+					"name": "https://localhost:5000/api/v1/employees/login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"john22\",\n    \"password\": \"john123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://localhost:5000/api/v1/employees/login",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"employees",
+								"login"
+							]
+						},
+						"description": "This API route handles employee login"
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/employees/login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"john22\",\n    \"password\": \"john123\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:5000/api/v1/employees/login",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"employees",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Set-Cookie",
+									"value": "sessionCookie=MTYwODIxNTg1NHxkNGE5bnRaWGxiT21nTTVIS192eDdKZkg5a1g0MU45TGZWX081Ym1odEw2NEF4Q0V3b0taZG9nQ1hGOFZpbzRvdlpYZUhMcDY1ek9PcXRCVlFZeGhweUZhdmtSZkJQcnE0YThkU3RNYVQ3X2tSM2w5TGZzSFN6Rm1NQV93UzgxZm16ZzNyVnV3ZlJwM3dOQlEtQzdPZmNYV1NZdExqcHM0VXhyYWM5UEYxVThwMkFKU2o2UUJHdU1pQTl6REVIZEN8LqyQlsS3MDVRXZMj2mmW-93yzUiN5_0taYSuON3KXSU=; Path=/; Expires=Thu, 17 Dec 2020 14:52:34 GMT; Max-Age=900; HttpOnly"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 14:37:34 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "https://localhost:5000/api/v1/employees/logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:5000/api/v1/employees/logout",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"employees",
+								"logout"
+							]
+						},
+						"description": "This logs out an employee"
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/employees/logout",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:5000/api/v1/employees/logout",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"employees",
+										"logout"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 16:30:49 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "https://localhost:5000/api/v1/employees",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"paul3\",\n    \"firstname\": \"Paul\",\n    \"lastname\": \"Lee\",\n    \"password\": \"paul123\",\n    \"role\": \"employee\"\n}"
+						},
+						"url": {
+							"raw": "https://localhost:5000/api/v1/employees",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"employees"
+							]
+						},
+						"description": "This request creates a single new employee by an existing employee with Admin role.\nUsername, Firstname and Lastname must be unique. If two or more employees have the same first & last name, then username must be differentiating \n"
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/employees",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"name": "Content-Type",
+										"value": "application/json",
+										"type": "json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"username\": \"paul\",\n    \"firstname\": \"Paul\",\n    \"lastname\": \"Lee\",\n    \"password\": \"paul123\",\n    \"role\": \"employee\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://localhost:5000/api/v1/employees",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"employees"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 14:37:59 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Wastage",
+			"item": [
+				{
+					"name": "Report",
+					"item": [
+						{
+							"name": "https://localhost:5000/api/v1/wastages/reports/month",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:5000/api/v1/wastages/reports/month",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"wastages",
+										"reports",
+										"month"
+									]
+								},
+								"description": "This API gets the total quantity & total lost sales report by grouping the values of month & wastage reason & product name together."
+							},
+							"response": [
+								{
+									"name": "https://localhost:5000/api/v1/wastages/reports/month",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "https://localhost:5000/api/v1/wastages/reports/month",
+											"protocol": "https",
+											"host": [
+												"localhost"
+											],
+											"port": "5000",
+											"path": [
+												"api",
+												"v1",
+												"wastages",
+												"reports",
+												"month"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 17 Dec 2020 09:09:09 GMT"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1323"
+										}
+									],
+									"cookie": [],
+									"body": "[\n    {\n        \"month\": 12,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"danish\",\n        \"total_quantity\": 98,\n        \"total_lost_sales\": 176.4\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"honey bagel\",\n        \"total_quantity\": 58,\n        \"total_lost_sales\": 81.2\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"donut\",\n        \"total_quantity\": 38,\n        \"total_lost_sales\": 49.4\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"chocolate muffin\",\n        \"total_quantity\": 38,\n        \"total_lost_sales\": 49.4\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"cinnamon rolls\",\n        \"total_quantity\": 20,\n        \"total_lost_sales\": 40\n    },\n    {\n        \"month\": 11,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"chocolate muffin\",\n        \"total_quantity\": 20,\n        \"total_lost_sales\": 26\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Staff consumption\",\n        \"product_name\": \"cinnamon rolls\",\n        \"total_quantity\": 10,\n        \"total_lost_sales\": 20\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Stock damaged\",\n        \"product_name\": \"original cheesecake\",\n        \"total_quantity\": 8,\n        \"total_lost_sales\": 12\n    },\n    {\n        \"month\": 11,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"donut\",\n        \"total_quantity\": 8,\n        \"total_lost_sales\": 10.4\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Staff consumption\",\n        \"product_name\": \"donut\",\n        \"total_quantity\": 7,\n        \"total_lost_sales\": 9.1\n    },\n    {\n        \"month\": 12,\n        \"reason\": \"Stock damaged\",\n        \"product_name\": \"donut\",\n        \"total_quantity\": 5,\n        \"total_lost_sales\": 6.5\n    },\n    {\n        \"month\": 11,\n        \"reason\": \"Stock damaged\",\n        \"product_name\": \"original cheesecake\",\n        \"total_quantity\": 3,\n        \"total_lost_sales\": 4.5\n    }\n]"
+								}
+							]
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "https://localhost:5000/api/v1/wastages",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:5000/api/v1/wastages",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"wastages"
+							]
+						},
+						"description": "This API gives an overview of the past 7 days of wastage sorted in descending order - meaning the latest record is at the top."
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/wastages",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:5000/api/v1/wastages",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"wastages"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 09:08:43 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "1153"
+								}
+							],
+							"cookie": [],
+							"body": "[\n    {\n        \"wastage_id\": 22,\n        \"wastage_date\": \"2020-12-16T00:00:00Z\",\n        \"quantity\": 10,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"cinnamon rolls\",\n        \"cost_price\": 1,\n        \"sales_price\": 2,\n        \"lost_sales\": 20,\n        \"firstname\": \"Tom\"\n    },\n    {\n        \"wastage_id\": 21,\n        \"wastage_date\": \"2020-12-16T00:00:00Z\",\n        \"quantity\": 22,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"honey bagel\",\n        \"cost_price\": 0.9,\n        \"sales_price\": 1.4,\n        \"lost_sales\": 30.8,\n        \"firstname\": \"Tom\"\n    },\n    {\n        \"wastage_id\": 20,\n        \"wastage_date\": \"2020-12-15T00:00:00Z\",\n        \"quantity\": 15,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"donut\",\n        \"cost_price\": 0.8,\n        \"sales_price\": 1.3,\n        \"lost_sales\": 19.5,\n        \"firstname\": \"Tom\"\n    },\n    {\n        \"wastage_id\": 19,\n        \"wastage_date\": \"2020-12-14T00:00:00Z\",\n        \"quantity\": 18,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"chocolate muffin\",\n        \"cost_price\": 0.8,\n        \"sales_price\": 1.3,\n        \"lost_sales\": 23.4,\n        \"firstname\": \"John\"\n    },\n    {\n        \"wastage_id\": 18,\n        \"wastage_date\": \"2020-12-13T00:00:00Z\",\n        \"quantity\": 7,\n        \"reason\": \"Staff consumption\",\n        \"product_name\": \"donut\",\n        \"cost_price\": 0.8,\n        \"sales_price\": 1.3,\n        \"lost_sales\": 9.1,\n        \"firstname\": \"John\"\n    },\n    {\n        \"wastage_id\": 17,\n        \"wastage_date\": \"2020-12-12T00:00:00Z\",\n        \"quantity\": 40,\n        \"reason\": \"Unsold stock\",\n        \"product_name\": \"danish\",\n        \"cost_price\": 1,\n        \"sales_price\": 1.8,\n        \"lost_sales\": 72,\n        \"firstname\": \"John\"\n    }\n]"
+						}
+					]
+				},
+				{
+					"name": "https://localhost:5000/api/v1/wastages",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"wastage_date\": \"2020-12-16T00:00:00Z\",\n    \"quantity\": 12,\n    \"reason\": \"Staff consumption\",\n    \"product_id\": 3\n}"
+						},
+						"url": {
+							"raw": "https://localhost:5000/api/v1/wastages",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"wastages"
+							]
+						},
+						"description": "This creates a single resource for wastage."
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/wastages",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"wastage_date\": \"2020-12-16T00:00:00Z\",\n    \"quantity\": 12,\n    \"reason\": \"Staff consumption\",\n    \"product_id\": 3\n}"
+								},
+								"url": {
+									"raw": "https://localhost:5000/api/v1/wastages",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"wastages"
+									]
+								}
+							},
+							"status": "Created",
+							"code": 201,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 09:09:44 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "0"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				},
+				{
+					"name": "https://localhost:5000/api/v1/wastages/4",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://localhost:5000/api/v1/wastages/4",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"wastages",
+								"4"
+							]
+						},
+						"description": "This API queries for a single resource of wastage combining with the product name from product table. "
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/wastages/4",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://localhost:5000/api/v1/wastages/4",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"wastages",
+										"4"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 16:44:23 GMT"
+								},
+								{
+									"key": "Content-Length",
+									"value": "122"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"wastage_id\": 4,\n    \"wastage_date\": \"2020-12-01T00:00:00Z\",\n    \"quantity\": 18,\n    \"reason\": \"Unsold stock\",\n    \"product_name\": \"honey bagel\"\n}"
+						}
+					]
+				},
+				{
+					"name": "https://localhost:5000/api/v1/wastages/4",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"wastage_date\": \"2020-12-15T00:00:00Z\",\n    \"quantity\": 10,\n    \"reason\": \"Staff consumption\",\n    \"product_id\": 3\n}"
+						},
+						"url": {
+							"raw": "https://localhost:5000/api/v1/wastages/4",
+							"protocol": "https",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"api",
+								"v1",
+								"wastages",
+								"4"
+							]
+						},
+						"description": "This API modifies an existing resource with id=4 in this example path.\nIt must be used in conjunction with corresponding GET request."
+					},
+					"response": [
+						{
+							"name": "https://localhost:5000/api/v1/wastages/4",
+							"originalRequest": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"type": "text",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"wastage_date\": \"2020-12-15T00:00:00Z\",\n    \"quantity\": 10,\n    \"reason\": \"Staff consumption\",\n    \"product_id\": 3\n}"
+								},
+								"url": {
+									"raw": "https://localhost:5000/api/v1/wastages/4",
+									"protocol": "https",
+									"host": [
+										"localhost"
+									],
+									"port": "5000",
+									"path": [
+										"api",
+										"v1",
+										"wastages",
+										"4"
+									]
+								}
+							},
+							"status": "No Content",
+							"code": 204,
+							"_postman_previewlanguage": "plain",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Thu, 17 Dec 2020 09:09:56 GMT"
+								}
+							],
+							"cookie": [],
+							"body": null
+						}
+					]
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
