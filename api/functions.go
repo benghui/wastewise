@@ -57,10 +57,9 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		// http.Redirect(w, r, "/api/v1/wastages", http.StatusFound)
 
 	} else {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid content-type", http.StatusBadRequest)
 	}
 }
 
@@ -150,7 +149,7 @@ func (s *Server) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 
 	} else {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid content-type", http.StatusBadRequest)
 	}
 
 }
@@ -262,7 +261,7 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusCreated)
 	} else {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid content-type", http.StatusBadRequest)
 	}
 }
 
@@ -342,7 +341,7 @@ func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
 		}
 		w.WriteHeader(http.StatusNoContent)
 	} else {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid content-type", http.StatusBadRequest)
 	}
 }
 
