@@ -14,13 +14,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// Server struct holding database connection pool
-// and session cookiestore.
-type Server struct {
-	db    *sql.DB
-	store *sessions.CookieStore
-}
-
 func init() {
 	// Load variables in .env file using godotenv package.
 	err := godotenv.Load()

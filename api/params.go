@@ -1,18 +1,28 @@
 package main
 
 import (
+	"database/sql"
 	"sync"
 	"time"
+
+	"github.com/gorilla/sessions"
 )
+
+// Server struct holding database connection pool
+// and session cookiestore.
+type Server struct {
+	db    *sql.DB
+	store *sessions.CookieStore
+}
 
 // Employees contain parameters for employee
 type Employees struct {
-	Mu         sync.RWMutex
-	Username   string `json:"username"`
-	Firstname  string `json:"firstname"`
-	Lastname   string `json:"lastname"`
-	Password   string `json:"password"`
-	Role       string `json:"role"`
+	Mu        sync.RWMutex
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Password  string `json:"password"`
+	Role      string `json:"role"`
 }
 
 // Credentials contain parameters for logging in
