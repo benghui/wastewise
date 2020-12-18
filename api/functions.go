@@ -8,17 +8,14 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // LoginEmployee authenticates an employee
 func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
 	// Checks that request content type matches.
 	if r.Header.Get("Content-type") == "application/json" {
@@ -65,19 +62,15 @@ func (s *Server) LoginEmployee(w http.ResponseWriter, r *http.Request) {
 
 // LogoutEmployee revokes authentication.
 func (s *Server) LogoutEmployee(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
 	session.Values["user"] = nil
 	session.Values["ID"] = nil
 	session.Values["auth"] = nil
 	session.Values["role"] = nil
 	session.Options.MaxAge = -1
-	err = session.Save(r, w)
+	err := session.Save(r, w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -86,19 +79,16 @@ func (s *Server) LogoutEmployee(w http.ResponseWriter, r *http.Request) {
 
 // CreateEmployee handles creating an employee
 func (s *Server) CreateEmployee(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
+	// Check that user role is authorized as admin
 	if session.Values["role"].(string) != "admin" {
 		http.Error(w, "No Access", http.StatusForbidden)
 		return
@@ -147,29 +137,22 @@ func (s *Server) CreateEmployee(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		w.WriteHeader(http.StatusCreated)
-
 	} else {
 		http.Error(w, "Invalid content-type", http.StatusBadRequest)
 	}
-
 }
 
 // GetProducts handles query to all products data.
 // It is a protected resource requiring authentication value from sessions.
 func (s *Server) GetProducts(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
-
 	productResults, err := QueryProducts(s.db)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -189,16 +172,12 @@ func (s *Server) GetProducts(w http.ResponseWriter, r *http.Request) {
 // It is a protected resource requiring authentication value from sessions.
 // Default is last 7 days from current day.
 func (s *Server) GetWastages(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -219,16 +198,12 @@ func (s *Server) GetWastages(w http.ResponseWriter, r *http.Request) {
 
 // CreateWastage handles inserting new wastage entry.
 func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -267,6 +242,14 @@ func (s *Server) CreateWastage(w http.ResponseWriter, r *http.Request) {
 
 // GetSingleWastage handles query for wastage entry.
 func (s *Server) GetSingleWastage(w http.ResponseWriter, r *http.Request) {
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
+
+	// Check that employee is authenticated.
+	if session.Values["auth"] != true {
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		return
+	}
 	params := mux.Vars(r)["id"]
 	id, err := strconv.Atoi(params)
 	if err != nil {
@@ -290,16 +273,12 @@ func (s *Server) GetSingleWastage(w http.ResponseWriter, r *http.Request) {
 
 // ModifyWastage handles editing of one wastage record.
 func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -347,16 +326,12 @@ func (s *Server) ModifyWastage(w http.ResponseWriter, r *http.Request) {
 
 // GetWastagesReportMonthly handles query for monthly report
 func (s *Server) GetWastagesReportMonthly(w http.ResponseWriter, r *http.Request) {
-	// Loads the session data from cookiestore.
-	session, err := s.store.Get(r, "sessionCookie")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+	// Retrieve session from request context.
+	session := r.Context().Value(SessionKey{}).(*sessions.Session)
 
-	// Check that employee is authenticated. Otherwise redirect to login.
+	// Check that employee is authenticated.
 	if session.Values["auth"] != true {
-		http.Redirect(w, r, "/api/v1/employee/login", http.StatusUnauthorized)
+		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 

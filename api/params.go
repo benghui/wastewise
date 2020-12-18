@@ -15,6 +15,10 @@ type Server struct {
 	store *sessions.CookieStore
 }
 
+// SessionKey is a context helper
+type SessionKey struct {}
+
+const sessionKey = "session"
 // Employees contain parameters for employee
 type Employees struct {
 	Mu        sync.RWMutex

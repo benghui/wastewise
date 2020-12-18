@@ -84,8 +84,8 @@ func main() {
 
 	router.HandleFunc("/api/v1/wastages/reports/month", s.GetWastagesReportMonthly).Methods(http.MethodGet)
 
-	// Add logging middleware to router.
-	router.Use(LoggingMiddleware)
+	// Add logging & session middleware to router.
+	router.Use(LoggingMiddleware, s.SessionMiddleware)
 
 	// Start https server.
 	listenAt := fmt.Sprintf(":%s", port)
