@@ -47,17 +47,21 @@ func main() {
 	authKey := securecookie.GenerateRandomKey(64)
 	encryptionKey := securecookie.GenerateRandomKey(32)
 
-	// Initialize session cookiestore.
+	// Initialize session cookiestore with authkey & encryptionkey
+	// This is a security measure to prevent access to cookie values
 	store := sessions.NewCookieStore(
 		authKey,
 		encryptionKey,
 	)
 
 	// Set max age & httponly options.
+	// httponly true prevents Javascript access to cookies and mitigates XSS attack
+	// secure true ensures encrypted request over the HTTPS protocol and mitigates MITM attack
 	store.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   60 * 15,
 		HttpOnly: true,
+		Secure:   true,
 	}
 
 	// Create instance of server with db connection pool
@@ -70,7 +74,6 @@ func main() {
 	router.HandleFunc("/api/v1/employees/login", s.LoginEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/employees/logout", s.LogoutEmployee).Methods(http.MethodPost)
 	router.HandleFunc("/api/v1/employees", s.CreateEmployee).Methods(http.MethodPost)
-
 
 	router.HandleFunc("/api/v1/products", s.GetProducts).Methods(http.MethodGet)
 
